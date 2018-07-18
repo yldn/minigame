@@ -73,7 +73,7 @@ public class ObstacleManager {
 
             //draw score
             Paint paint = new Paint();
-            paint.setTextSize(50);
+            paint.setTextSize(100);
             paint.setColor(Color.MAGENTA);
 
             //x和y是text输出的位置
