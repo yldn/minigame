@@ -63,6 +63,7 @@ public class ObstacleManager {
             int xStart = (int) (Math.random()*(Constants.SCREEN_WIDTH-playerGap));
             obstacles.add(0,new Obstacle(obstacleHeight,color,xStart,obstacles.get(0).getRectangle().top-obstacleHeight-obstacleGap,playerGap));
             obstacles.remove(obstacles.size()-1);
+            //加分
             score ++;
         }
 
@@ -78,7 +79,7 @@ public class ObstacleManager {
 
             //x和y是text输出的位置
             //y加上一个paint的高度用来防止字体显示到屏幕外
-            canvas.drawText(""+score,50,50+ paint.descent()-paint.ascent(),paint);
+            canvas.drawText("score:"+score,50,50+ paint.descent()-paint.ascent(),paint);
             ob.draw(canvas);
         }
     }
