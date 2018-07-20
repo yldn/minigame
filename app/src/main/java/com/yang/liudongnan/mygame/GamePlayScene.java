@@ -10,6 +10,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 
 import java.security.PrivateKey;
+import java.util.Arrays;
 
 public class GamePlayScene implements Scene {
     private  Rect r = new Rect();
@@ -18,11 +19,14 @@ public class GamePlayScene implements Scene {
     private Point playerPoint;
     private ObstacleManager obstacleManager;
 
-
     private boolean movingPlayer = false;
-
     private boolean gameOver = false;
     private long gameOvertime;
+
+    private OrientationData orientationData;
+    private long frameTime;
+
+
     public GamePlayScene() {
         player = new RectPlayer(new Rect(100,100,200,200),
                 Color.rgb(0,255,255));
@@ -30,11 +34,47 @@ public class GamePlayScene implements Scene {
         player.update(playerPoint);
 
         obstacleManager = new ObstacleManager(200, 350,75,Color.BLACK);
+
+        orientationData = new OrientationData();
+        orientationData.register();
+        frameTime = System.currentTimeMillis();
     }
 
     @Override
     public void update() {
         if(!gameOver) {
+            if(frameTime < Constants.INIT_TIME){
+                frameTime = Constants.INIT_TIME;
+            }
+            int elapsedTime = (int)(System.currentTimeMillis() - frameTime);
+            frameTime = System.currentTimeMillis();
+            if(orientationData.getOrientation()!= null && orientationData.getStartOrientation() != null){
+                System.out.println("orientationData: "+ Arrays.toString(orientationData.getOrientation())+
+                                    "startOrientationData: "+ Arrays.toString(orientationData.getStartOrientation()));
+                float pitch = orientationData.getOrientation()[1] - orientationData.getStartOrientation()[1];
+                System.out.println("pitch : "+pitch);
+                float roll = orientationData.getOrientation()[2] - orientationData.getStartOrientation()[2];
+                System.out.println("roll : "+roll);
+                float xSpeed = 2* roll*Constants.SCREEN_WIDTH/500f;
+                float ySpeed = pitch*Constants.SCREEN_HEIGHT/800f;
+
+                playerPoint.x += Math.abs(xSpeed*elapsedTime)> 5 ? xSpeed*elapsedTime:0;
+                playerPoint.y -= Math.abs(xSpeed*elapsedTime)> 5 ? ySpeed*elapsedTime:0;
+            }
+            //clamp
+            if(playerPoint .x < 0){
+                playerPoint.x = Constants.SCREEN_WIDTH;
+            }
+            else if(playerPoint.x > Constants.SCREEN_WIDTH){
+                playerPoint.x = 0;
+            }
+            if(playerPoint .y < 0){
+                playerPoint.y = 0;
+            }
+            else if(playerPoint.y > Constants.SCREEN_HEIGHT){
+                playerPoint.y = Constants.SCREEN_HEIGHT;
+            }
+
             player.update(playerPoint);
             obstacleManager.update();
             if(obstacleManager.playerCollide(player)){
@@ -47,6 +87,7 @@ public class GamePlayScene implements Scene {
             if( System.currentTimeMillis() - gameOvertime >= 2000  ){
                 reset();
                 gameOver = false;
+                orientationData.newGame();
             }
         }
 
@@ -78,23 +119,31 @@ public class GamePlayScene implements Scene {
                 if(!gameOver && player.getRectangle().contains((int)event.getX() , (int) event.getY() )){
                     movingPlayer = true;
                 }
-                //如果点击则reset
+//                如果点击则reset
                 if(gameOver){
                     reset();
                     gameOver = false;
+                    orientationData.newGame();
                 }
-                Log.d(TAG,"Action Down");
+//                if(gameOver){
+//                    if( System.currentTimeMillis() - gameOvertime >= 2000  ){
+//                        reset();
+//                        gameOver = false;
+//                        orientationData.newGame();
+//                    }
+//                }
+//                Log.d(TAG,"Action Down");
                 break;
             case MotionEvent.ACTION_MOVE:
                 if(movingPlayer & !gameOver) {
                     playerPoint.set((int) event.getX(), (int) event.getY());
                 }
-                Log.d(TAG,"Action Move");
+//                Log.d(TAG,"Action Move");
                 break;
             case MotionEvent.ACTION_UP:
 
                 movingPlayer = false;
-                Log.d(TAG,"Action Up");
+//                Log.d(TAG,"Action Up");
                 break;
         }
     }
