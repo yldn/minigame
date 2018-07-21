@@ -11,11 +11,9 @@ public class MainThread extends Thread {
     private SurfaceHolder surfaceHolder;
     //游戏页面
     private GamePanel gamePanel;
-
     private  boolean running ;
     //背景板
     public static Canvas canvas;
-
     public void setRunning(boolean running){
         this.running = running;
     }
@@ -75,14 +73,7 @@ public class MainThread extends Thread {
                  totalTime = 0;
                  System.out.println(averageFPS);
              }
-
-
         }
-
-
-
     }
-
-
 
 }

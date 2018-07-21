@@ -11,7 +11,7 @@ public class Obstacle implements GameObject {
 
     private Rect rectangle;
     private Rect rectangle2;
-    private  int color;
+    private int color;
 
     //getters
     public Rect getRectangle() {
@@ -39,8 +39,8 @@ public class Obstacle implements GameObject {
     public boolean playerCollide(RectPlayer player){
         if(Rect.intersects(rectangle,player.getRectangle()) ||
                 Rect.intersects(rectangle2,player.getRectangle()) ){
-            System.out.println("collision detected!");
-            return  true  ;
+//            System.out.println("collision detected!");
+            return true  ;
         }
         return false;
     }
